@@ -64,9 +64,9 @@ async def fetch_osu_api(subject: str, course_code: str):
             professors[instructor_name].append({
                 "section": section['section'],
                 "building": meeting['buildingDescription'],
-                "startTime": meeting['startTime'],
-                "endTime": meeting['endTime'],
-                "days": days
+                "startTime": meeting['startTime'] or "N/A",
+                "endTime": meeting['endTime'] or "N/A",
+                "days": days or "N/A"
             })
 
     # Example mock data
