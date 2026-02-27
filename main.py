@@ -12,14 +12,16 @@ app = FastAPI(
 
 # Request / Response Models
 class CourseRequest(BaseModel):
+    subject: str
     courseCode: str
 
 class Professor(BaseModel):
     name: str
     section: str
-    rating: float
+    rating: float # how you rate the guy
+    difficulty: float # how hard the prof is
     reviewCount: int
-    difficulty: float
+    # summary: List[str]
 
 class CourseResponse(BaseModel):
     courseCode: str
@@ -30,8 +32,8 @@ class CourseResponse(BaseModel):
 async def get_course_professor_data(req: CourseRequest):
     course_code = req.courseCode
 
-    # Fetch OSU API
-    professors = await fetch_osu_api(course_code)
+    # 1️⃣ Fetch OSU API
+    professors = await fetch_osu_api(req.subject, course_code)
 
     # Enrich with RMP data
     enriched = []
