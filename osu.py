@@ -57,8 +57,9 @@ async def fetch_osu_api(subject: str, course_code: str):
                 ])
             
             # Yes this can happen apparently
-            if not days:
-                continue
+            # ^ nvm this probably means async
+            # if not days:
+            #     continue
             
             professors[instructor_name].append({
                 "section": section['section'],
