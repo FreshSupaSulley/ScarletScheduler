@@ -30,14 +30,14 @@ class CourseResponse(BaseModel):
 async def get_course_professor_data(req: CourseRequest):
     course_code = req.courseCode
 
-    # 1️⃣ Fetch OSU API
+    # Fetch OSU API
     professors = await fetch_osu_api(course_code)
 
-    # 2️⃣ Enrich with RMP data
+    # Enrich with RMP data
     enriched = []
 
     for prof in professors:
-        rmp_data = await fetch_rmp(prof["name"])
+        rmp_data = await fetch_rmp(course_code, prof["name"])
 
         enriched.append(
             Professor(
