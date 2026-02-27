@@ -25,9 +25,9 @@ class Section(BaseModel):
 class Professor(BaseModel):
     name: str
     sections: List[Section]
-    rating: float # how you rate the guy
-    difficulty: float # how hard the prof is
-    reviewCount: int
+    rating: Optional[float] # how you rate the guy
+    difficulty: Optional[float] # how hard the prof is
+    reviewCount: Optional[int]
     reviews: Optional[List[str]]
 
 class CourseResponse(BaseModel):

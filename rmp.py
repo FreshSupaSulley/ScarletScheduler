@@ -97,9 +97,10 @@ async def fetch_rmp(prof_name: str):
 
         return {
             "name": f"{prof.get('firstName')} {prof.get('lastName')}",
-            "rating": rating,
-            "reviewCount": review_count,
-            "difficulty": avg_difficulty,
+            # They are omitted if 0
+            "rating": rating or None,
+            "reviewCount": review_count or None,
+            "difficulty": avg_difficulty or None,
             "wouldTakeAgainPercent": would_take_again_percent,
             "reviews": reviews
         }
