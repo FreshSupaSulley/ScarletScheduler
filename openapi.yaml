@@ -25,14 +25,17 @@ paths:
               type: object
               required:
                 - subject
-              type: object
-              required:
                 - courseCode
               properties:
+                subject:
+                  type: string
+                  description: Subject code (e.g., CSE)
+                  example: "CSE"
                 courseCode:
                   type: string
                   description: Course identifier (e.g., 2221)
                   example: "2221"
+
       responses:
         "200":
           description: Successfully retrieved professor data

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 from osu import fetch_osu_api
 from rmp import fetch_rmp
@@ -28,7 +28,7 @@ class Professor(BaseModel):
     rating: float # how you rate the guy
     difficulty: float # how hard the prof is
     reviewCount: int
-    reviews: List[str]
+    reviews: Optional[List[str]]
 
 class CourseResponse(BaseModel):
     courseCode: str
@@ -46,7 +46,9 @@ async def get_course_professor_data(req: CourseRequest):
 
     for prof in professors:
         rmp_data = await fetch_rmp(prof)
-        print("RMP'ing", prof, rmp_data["reviews"])
+        if not rmp_data:
+            continue
+        print("RMP'ing", prof)
         enriched.append(
             Professor(
                 name=prof,
