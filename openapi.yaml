@@ -1,0 +1,96 @@
+openapi: 3.1.0
+info:
+  title: ScarletScheduler Tool API
+  version: 1.0.0
+  description: >
+    Tool API for retrieving professors teaching a course and their
+    aggregated RateMyProfessor data.
+
+servers:
+  - url: https://scarletscheduler.onrender.com
+
+paths:
+  /tools/getCourseProfessorData:
+    post:
+      summary: Get professors and review data for a course
+      operationId: getCourseProfessorData
+      description: >
+        Fetches all professors teaching a given course and enriches them
+        with RateMyProfessor ratings, review counts, and difficulty scores.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - subject
+              type: object
+              required:
+                - courseCode
+              properties:
+                courseCode:
+                  type: string
+                  description: Course identifier (e.g., 2221)
+                  example: "2221"
+      responses:
+        "200":
+          description: Successfully retrieved professor data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  courseCode:
+                    type: string
+                    example: "2221"
+                  professors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: "Paolo Bucci"
+                        sections:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              section:
+                                type: string
+                                example: "0005"
+                              building:
+                                type: string
+                                example: "Dreese Lab 357"
+                              startTime:
+                                type: string
+                                example: "8:00 am"
+                              endTime:
+                                type: string
+                                example: "8:55 am"
+                              days:
+                                type: string
+                                example: "TuTh"
+                        rating:
+                          type: number
+                          format: float
+                          example: 4.3
+                        difficulty:
+                          type: number
+                          format: float
+                          example: 3.8
+                        reviewCount:
+                          type: integer
+                          example: 146
+                        reviews:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "Great professor, very passionate."
+                            - "Hard grader but fair."
+        "400":
+          description: Invalid request
+        "500":
+          description: Internal server error

@@ -15,13 +15,20 @@ class CourseRequest(BaseModel):
     subject: str
     courseCode: str
 
+class Section(BaseModel):
+    section: str
+    building: str
+    startTime: str
+    endTime: str
+    days: str
+
 class Professor(BaseModel):
     name: str
-    section: str
+    sections: List[Section]
     rating: float # how you rate the guy
     difficulty: float # how hard the prof is
     reviewCount: int
-    # summary: List[str]
+    reviews: List[str]
 
 class CourseResponse(BaseModel):
     courseCode: str
@@ -32,22 +39,22 @@ class CourseResponse(BaseModel):
 async def get_course_professor_data(req: CourseRequest):
     course_code = req.courseCode
 
-    # 1️⃣ Fetch OSU API
+    # Fetch sections from OSU Mobile App API
     professors = await fetch_osu_api(req.subject, course_code)
-
     # Enrich with RMP data
     enriched = []
 
     for prof in professors:
-        rmp_data = await fetch_rmp(course_code, prof["name"])
-
+        rmp_data = await fetch_rmp(prof)
+        print("RMP'ing", prof, rmp_data["reviews"])
         enriched.append(
             Professor(
-                name=prof["name"],
-                section=prof["section"],
+                name=prof,
+                sections=professors[prof],
                 rating=rmp_data["rating"],
                 reviewCount=rmp_data["reviewCount"],
                 difficulty=rmp_data["difficulty"],
+                reviews=rmp_data["reviews"]
             )
         )
 

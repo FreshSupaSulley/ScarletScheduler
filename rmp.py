@@ -2,7 +2,7 @@ import httpx
 
 SCHOOL_ID = "724"  # Ohio State
 
-async def fetch_rmp(courseCode: str, prof_name: str):
+async def fetch_rmp(prof_name: str):
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
         "Accept": "*/*",
@@ -63,67 +63,37 @@ async def fetch_rmp(courseCode: str, prof_name: str):
             else None
         )
 
-        # Fetch first 20 reviews (filtered by course code if provided)
-        if courseCode:
-            review_query = {
-                "query": """query RatingsPageQuery($id: ID!, $courseCode: String!) {
-                    node(id: $id) {
-                        ... on Teacher {
-                            ratings(first: 20, courseFilter: $courseCode) {
-                                edges {
-                                    node {
-                                        class
-                                        qualityRating
-                                        difficultyRating
-                                        date
-                                        comment
-                                        wouldTakeAgain
-                                    }
+        # Fetch first 20 reviews
+        # In the future, we'd grab the reviews that are relevant to the class as well instead of every review, although the teaching style likely remains the same between courses for the same prof
+        review_query = {
+            "query": """query RatingsPageQuery($id: ID!) {
+                node(id: $id) {
+                    ... on Teacher {
+                        ratings(first: 20) {
+                            edges {
+                                node {
+                                    class
+                                    qualityRating
+                                    difficultyRating
+                                    date
+                                    comment
+                                    wouldTakeAgain
                                 }
                             }
                         }
                     }
-                }""",
-                "variables": {"id": prof_id, "courseCode": courseCode}
-            }
-        else:
-            review_query = {
-                "query": """query RatingsPageQuery($id: ID!) {
-                    node(id: $id) {
-                        ... on Teacher {
-                            ratings(first: 20) {
-                                edges {
-                                    node {
-                                        class
-                                        qualityRating
-                                        difficultyRating
-                                        date
-                                        comment
-                                        wouldTakeAgain
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }""",
-                "variables": {"id": prof_id}
-            }
+                }
+            }""",
+            "variables": {"id": prof_id}
+        }
 
         review_resp = await client.post(search_url, json=review_query)
         review_data = review_resp.json()
 
         raw_reviews = review_data.get("data", {}).get("node", {}).get("ratings", {}).get("edges", [])
 
-        reviews = [
-            {
-                "course": r["node"].get("class"),
-                "quality": r["node"].get("qualityRating"),
-                "difficulty": r["node"].get("difficultyRating"),
-                "date": r["node"].get("date"),
-                "comment": r["node"].get("comment"),
-            }
-            for r in raw_reviews
-        ]
+        # Just get the raw text for now
+        reviews = [r["node"].get("comment") for r in raw_reviews]
 
         return {
             "name": f"{prof.get('firstName')} {prof.get('lastName')}",
