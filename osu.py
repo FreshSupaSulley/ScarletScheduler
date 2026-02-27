@@ -5,6 +5,7 @@ async def fetch_osu_api(subject: str, course_code: str):
     """
     Replace with real OSU Mobile API call.
     """
+    print("Got subject", subject, "and course code", course_code)
     # Fetch
     response = httpx.get(f"https://content.osu.edu/v2/classes/search?q={course_code}")
     response.raise_for_status() # in case it shits on us
